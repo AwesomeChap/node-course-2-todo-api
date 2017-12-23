@@ -1,5 +1,4 @@
-
-//console.time('handler name');
+// console.time('handler name');
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -26,17 +25,17 @@ app.post('/todos',(req,res)=>{
     });
 
     todo.save().then((result)=>{
-        return res.send(result);
+        res.send(result);
     },(err)=>{
-        return res.status(400).send(err);
+        res.status(400).send(err);
     });
 });
 
 app.get('/todos',(req,res)=>{
     Todo.find().then((todos)=>{
-        return res.send({todos});
+        res.send({todos});
     },(err)=>{
-       return res.status(400).send(err);
+       res.status(400).send(err);
     });
 });
 
@@ -52,9 +51,9 @@ app.get('/todos/:id',(req,res)=>{
         if(!todo){
             return res.status(404).send(' ');
         }
-        return res.status(200).send({todo});
+        res.status(200).send({todo});
     }).catch((e)=>{
-        return res.status(400).send('Bad Request');
+        res.status(400).send('Bad Request');
     })
 });
 
