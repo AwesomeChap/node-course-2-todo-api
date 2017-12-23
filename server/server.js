@@ -1,3 +1,6 @@
+
+//console.time('handler name');
+
 var express = require('express');
 var bodyParser = require('body-parser');
 
@@ -23,19 +26,20 @@ app.post('/todos',(req,res)=>{
     });
 
     todo.save().then((result)=>{
-        res.send(result);
+        return res.send(result);
     },(err)=>{
-        res.status(400).send(err);
+        return res.status(400).send(err);
     });
 });
 
 app.get('/todos',(req,res)=>{
     Todo.find().then((todos)=>{
-        res.send({todos});
+        return res.send({todos});
     },(err)=>{
-       res.status(400).send(err);
+       return res.status(400).send(err);
     });
 });
+
 
 app.get('/todos/:id',(req,res)=>{
 
@@ -48,14 +52,14 @@ app.get('/todos/:id',(req,res)=>{
         if(!todo){
             return res.status(404).send(' ');
         }
-        res.status(200).send({todo});
+        return res.status(200).send({todo});
     }).catch((e)=>{
-        res.status(400).send('Bad Request');
+        return res.status(400).send('Bad Request');
     })
 });
 
 app.listen(port,()=>{
     console.log('On Port :',port);
 })
-
+//console.timeEnd('handler name');
 module.exports = {app};
