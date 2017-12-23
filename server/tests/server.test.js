@@ -66,7 +66,8 @@ describe('GET /todos',()=>{
     });
 });
 
-describe('GET /todos/:id',()=>{
+describe('GET /to' +
+    'dos/:id',()=>{
    it ('Should return todo',(done)=>{
        request(app)
            .get(`/todos/${todos[0]._id.toHexString()}`)
