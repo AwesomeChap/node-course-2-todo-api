@@ -6,6 +6,8 @@ var {mongoose}  = require('./db/mongoose.js');
 var {Todo} = require('./models/todo');
 var {Users} = require('./models/users');
 
+console.log(process.env.MONGOLAB_URI);
+
 const port = process.env.PORT || 3000;
 
 var app = express();
