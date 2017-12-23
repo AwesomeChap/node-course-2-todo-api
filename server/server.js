@@ -34,7 +34,9 @@ app.get('/todos',(req,res)=>{
         res.send({todos});
     },(err)=>{
        res.status(400).send(err);
-    });
+    }).catch((e)=>{
+        res.status(404)send(e);
+    };
 });
 
 app.get('/todos/:id',(req,res)=>{
