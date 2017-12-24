@@ -1,3 +1,4 @@
+require('./config/config');
 // console.time('handler name');
 const _ = require('lodash');
 var express = require('express');
