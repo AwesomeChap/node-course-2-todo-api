@@ -11,7 +11,7 @@ var {Todo} = require('./models/todo');
 
 //console.log(process.env.MONGOLAB_URI || 'mongodb://localhost:27017/TodoApp');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 var app = express();
 
