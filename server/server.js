@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var {ObjectID} = require('mongodb');
 var {mongoose}  = require('./db/mongoose.js');
 var {Todo} = require('./models/todo');
-//var {Users} = require('./models/users');
+var {User} = require('./models/users');
 
 //console.log(process.env.MONGOLAB_URI || 'mongodb://localhost:27017/TodoApp');
 
@@ -97,6 +97,22 @@ app.patch('/todos/:id',(req,res)=>{
             return res.status(404).send('Todo not found')
         }
         res.send({todo});
+    }).catch((e)=>{
+        res.status(400).send(e);
+    });
+});
+
+app.post('/users',(req,res)=>{
+    var body = _.pick(req.body,['email', 'password']);
+    var user = new User({
+        email : body.email,
+        password : body.password
+    });
+    user.save().then(()=>{
+        // res.send(user);
+        return user.generateAuthToken();
+    }).then((token)=> {
+        res.header('x-auth',token).send(user);
     }).catch((e)=>{
         res.status(400).send(e);
     });
