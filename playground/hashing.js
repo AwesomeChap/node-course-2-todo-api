@@ -1,15 +1,31 @@
 const {SHA256} = require('crypto-js');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');//MD5 hashing is not immune to rainbow tables that's why we use SHA256 for hashing in most cases
+const bcrypt = require('bcryptjs'); //bcryptjs has salting built in
 
-var data = {
-    id : 10
-}
+var password = 'qwerty';
+var hashedPassword;
 
-var token = jwt.sign(data, '123abc');
-console.log(token);
+bcrypt.genSalt(10,(err,salt)=>{
+    bcrypt.hash(password , salt , (err, hash)=>{
+        console.log(hash);
+    });
+});
 
-var decoded = jwt.verify(token, '123abc');
-console.log('decoded = ',decoded);
+hashedPassword = '$2a$10$z8sDCTuWD38.DG.PswdrN.q4Rvao5qLelxgSerzmx6x1mfBomqxSS';
+bcrypt.compare(password,hashedPassword,(err,res)=>{
+    console.log(res);
+})
+
+
+// var data = {
+//     id : 10
+// }
+//
+// var token = jwt.sign(data, '123abc');
+// console.log(token);
+//
+// var decoded = jwt.verify(token, '123abc');
+// console.log('decoded = ',decoded);
 // var message = 'Awesome';
 // var hash = SHA256(message).toString();
 //
