@@ -8,9 +8,9 @@ var {ObjectID} = require('mongodb');
 var {mongoose}  = require('./db/mongoose.js');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/users');
+var {authenticate} = require('./middleware/middleware');
 
 //console.log(process.env.MONGOLAB_URI || 'mongodb://localhost:27017/TodoApp');
-
 const port = process.env.PORT;
 
 var app = express();
@@ -104,10 +104,11 @@ app.patch('/todos/:id',(req,res)=>{
 
 app.post('/users',(req,res)=>{
     var body = _.pick(req.body,['email', 'password']);
-    var user = new User({
-        email : body.email,
-        password : body.password
-    });
+    var user = new User(body);
+    // var user = new User({
+    //     email : body.email,
+    //     password : body.password
+    // });
     user.save().then(()=>{
         // res.send(user);
         return user.generateAuthToken();
@@ -117,6 +118,23 @@ app.post('/users',(req,res)=>{
         res.status(400).send(e);
     });
 });
+
+app.get('/users/me',authenticate,(req,res)=>{
+    res.send(req.user);
+});
+
+// app.get('/users/me',(req,res)=>{
+//     var token = req.header('x-auth');
+//
+//     User.findByToken(token).then((user)=>{
+//         if(!user){
+//             return Promise.reject();
+//         }
+//         res.send(user);
+//     }).catch((e)=>{
+//         res.status(401).send();
+//     });
+// });
 
 app.listen(port,()=>{
     console.log('On Port :',port);
