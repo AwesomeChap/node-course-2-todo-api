@@ -5,7 +5,7 @@ var {ObjectID} = require('mongodb');
 var {app} = require('./../server');
 var {Todo} = require('./../models/todo');
 var {User} = require('./../models/users');
-var {populateTodos, todos, populateUsers, users} = require('./seed/seed.js');
+var {todos, populateTodos, users, populateUsers} = require('./seed/seed');
 
 beforeEach(populateUsers);
 beforeEach(populateTodos);
@@ -256,15 +256,35 @@ describe('POST /users/login',()=>{
         });
 
     it('should reject login',(done)=>{
+        var email = users[0].email;
+        var password = users[0].password;
+
         request(app)
             .post('/users/login')
-            .send({
-                email : 'fvnkv',
-                password :''
-            }).expect(400)
+            .send({email, password})
+            .expect(400)
             .expect((res)=>{
                 expect(res.headers['x-auth']).toNotExist();
             }).end(done());
 
     });
 });
+
+// describe('DELETE /users/me/token',()=>{
+//     it('should remove auth token on logout',(done)=>{
+//         request(app)
+//            .delete('/users/me/token')
+//            .set('x-auth',users[1].tokens[0].token)
+//            .expect(200)
+//            .end((err, res)=>{
+//                 if(err){
+//                     return done(err);
+//                 }
+//                 User.findById(users[1]._id).then((user)=>{
+//                   expect(user.tokens.length).toBe(0);
+//                   done();
+//                }).catch((e)=>done(e));
+//            });
+//     });
+// });
+
