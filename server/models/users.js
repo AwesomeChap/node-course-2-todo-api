@@ -59,6 +59,31 @@ UserSchema.statics.findByToken = function (token) {//sends data back after searc
     });
 };
 
+UserSchema.statics.findByCredentials = function(email , password){
+    var User = this;
+
+    return User.findOne({email}).then((user)=>{
+        if(!user){
+            return Promise.reject();
+        }
+
+        return new Promise((resolve, reject)=>{
+           bcrypt.compare(password, user.password , (err,res)=>{
+               if(err){
+                   reject();
+               }
+               resolve(user);
+           });
+        });
+        // bcrypt.compare(password,user.password,(err,res)=>{
+        //     if(err){
+        //         return Promise.reject();
+        //     }
+        //     return Promise.resolve(user);
+        // });
+    });
+};
+
 UserSchema.pre('save',function(next){
     var user = this;
     if(user.isModified('password')){
@@ -73,7 +98,7 @@ UserSchema.pre('save',function(next){
     }
 });
 
-UserSchema.methods.generateAuthToken = function(){
+UserSchema.methods.generateAuthToken = function(){//it generate token and add it to user object as a property then returns token
     var user = this;
     var access = 'auth';
     var token = jwt.sign({_id : user._id.toHexString(),access},'abc123').toString();
