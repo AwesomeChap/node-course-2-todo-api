@@ -31,7 +31,6 @@ var UserSchema = new mongoose.Schema({
             required : true
         }
     }]
-
 });
 
 UserSchema.methods.toJSON = function(){
@@ -40,13 +39,25 @@ UserSchema.methods.toJSON = function(){
     return _.pick(userObject,['_id','email']);
 };
 
+UserSchema.methods.generateAuthToken = function(){//it generate token and add it to user object as a property then returns token
+    var user = this;
+    var access = 'auth';
+    var token = jwt.sign({_id : user._id.toHexString(),access},'abc123').toString();
+
+    user.tokens = user.tokens.concat([{access,token}]);
+    //instead of user.tokens.push({access,token}); it uses $pushAll and above one uses $set
+    return user.save().then(()=>{
+        return token;
+    });
+};
+
 UserSchema.statics.findByToken = function (token) {//sends data back after searching from DB
     var User = this;
     var decoded ;
     try{
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     }catch (e){
-        return Promise.reject('');
+        return Promise.reject();
         // return new Promise((resolve, reject)=>{
         //     reject();
         // })
@@ -69,10 +80,12 @@ UserSchema.statics.findByCredentials = function(email , password){
 
         return new Promise((resolve, reject)=>{
            bcrypt.compare(password, user.password , (err,res)=>{
-               if(err){
+               if(res){
+                   resolve(user);
+               }
+               else {
                    reject();
                }
-               resolve(user);
            });
         });
         // bcrypt.compare(password,user.password,(err,res)=>{
@@ -97,18 +110,6 @@ UserSchema.pre('save',function(next){
         next();
     }
 });
-
-UserSchema.methods.generateAuthToken = function(){//it generate token and add it to user object as a property then returns token
-    var user = this;
-    var access = 'auth';
-    var token = jwt.sign({_id : user._id.toHexString(),access},'abc123').toString();
-
-    user.tokens = user.tokens.concat([{access,token}]);
-    //instead of user.tokens.push({access,token}); it uses $pushAll and above one uses $set
-    return user.save().then(()=>{
-        return token;
-    });
-};
 
 UserSchema.methods.removeToken = function(token){
     var user = this;
